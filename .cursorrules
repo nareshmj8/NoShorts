@@ -1,0 +1,123 @@
+# 🧩 NoShorts - Cursor Code Guidelines
+
+## 1. 📁 File & Folder Structure
+- Follow feature-first structure (screens, models, services).
+- Each screen/component has its own folder.
+- Max 1 widget/class per file. Max file size ≈ 200 lines.
+- Example structure:
+  - lib/
+    - core/ (widgets, theme, helpers)
+    - models/ (Plan, Topic, etc.)
+    - services/ (supabase, gpt, auth)
+    - providers/ (riverpod state)
+    - screens/
+      - onboarding/
+      - home/
+      - topic_detail/
+      - my_plans/
+      - premium/
+    - main.dart
+
+---
+
+## 2. 🔄 Modularity
+- UI = Stateless/Stateful Widgets.
+- Logic = in services (no logic in widgets).
+- State = via Riverpod.
+- Models = clean, typed, JSON serializable.
+- Separate concerns always.
+
+---
+
+## 3. ✨ Reusable Components
+- Widgets used ≥2 times → extract to `core/widgets/`.
+- Examples: `GradientButton`, `PlanCard`, `CategoryTile`.
+
+---
+
+## 4. 🌐 API & Supabase Rules
+- All Supabase/GPT calls go in `services/`.
+- Never place HTTP/API calls in UI files.
+- Handle loading and error states.
+- Use typed models for all data (with fromJson / toJson).
+
+---
+
+## 5. 🧠 GPT Plan Generation
+- GPT input: category, topic, description (static).
+- Output: 6–10 steps with YouTube links.
+- Handle via `gpt_service.dart`.
+- Save generated plan to Supabase.
+- API key stored securely (e.g., .env file).
+
+---
+
+## 6. 💾 State Management
+- Use Riverpod or StateNotifier.
+- State to manage: auth, selected category/topic, plan count, premium.
+- Avoid `setState` for anything global.
+
+---
+
+## 7. 💡 UI/UX
+- Follow iOS/Android platform look & feel.
+- Light/Dark mode auto switch (based on system).
+- Clean layout: one goal per screen.
+- Use transitions like `Hero`, fade, or slide animations.
+
+---
+
+## 8. 🧪 Testing & Maintenance
+- Widget tests per screen.
+- Logic separated and unit-testable.
+- Avoid singletons unless needed.
+- Document each service with brief usage note.
+
+---
+
+## 9. 🔐 Auth & Sign-In
+- Google Sign-In via Supabase.
+- Sign-in occurs on 3rd onboarding screen.
+- After logout → go back to onboarding screen 1.
+- Logged-in user state should be globally accessible.
+
+---
+
+## 10. 📦 Dependency Guidelines
+Use only:
+- `flutter_riverpod`
+- `supabase_flutter`
+- `google_sign_in`
+- `revenuecat`
+- `dio` or `http`
+- `flutter_dotenv`
+
+Avoid:
+- Heavy UI packages
+- Redundant state managers (MobX, Bloc, etc.)
+
+---
+
+## 11. 🔁 Supabase Plan Sync
+- All plans stored in Supabase.
+- Realtime sync for both free (max 3/month) and premium users (unlimited).
+- On Plan Delete → remove from Supabase.
+- On Plan Generation → add to Supabase.
+
+---
+
+## 12. 🧭 Navigation Flow
+- Splash → Onboarding 1 → Onboarding 2 → Onboarding 3 (with Sign-In)
+- Then Home screen with Categories
+- Tap category → show Topics
+- Tap topic → Topic Detail screen with static description + Generate Plan
+- Tap Generate → call GPT → save to Supabase → go to “My Plans”
+- My Plans screen shows all user plans from Supabase
+- Settings/Account screen for Logout (returns to Onboarding 1)
+
+---
+
+**Cursor Dev Mode Tips:**
+- Keep file names descriptive and short (`plan_card.dart`, `auth_service.dart`).
+- Use `part of` only if needed; prefer flat files for simplicity.
+- Always auto-format (`dart format .`) before commit.
